@@ -10,71 +10,66 @@ struct BiList {
 template <typename T>
 class List {
 private:
-    BiList<T>* head;
-    BiList<T>* tail;
+    BiList<T>* fake;
 
 public:
-    List() : head(nullptr), tail(nullptr) {}
+    List() {
+        fake = new BiList<T>;
+        fake->next = fake;
+        fake->prev = fake;
+    }
+    
     ~List() {
         clear();
+        delete fake;
     }
 
     bool empty() const {
-        return head == nullptr;
+        return fake->next == fake;
     }
 
     void push_front(const T& value) {
-        BiList<T>* newNode = new BiList<T>{value, head, nullptr};
-        if (empty()) {
-            head = tail = newNode;
-        } else {
-            head->prev = newNode;
-            head = newNode;
-        }
+        BiList<T>* newNode = new BiList<T>{value, fake->next, fake};
+        fake->next->prev = newNode;
+        fake->next = newNode;
     }
 
     void push_back(const T& value) {
-        BiList<T>* newNode = new BiList<T>{value, nullptr, tail};
-        if (empty()) {
-            head = tail = newNode;
-        } else {
-            tail->next = newNode;
-            tail = newNode;
-        }
+        BiList<T>* newNode = new BiList<T>{value, fake, fake->prev};
+        fake->prev->next = newNode;
+        fake->prev = newNode;
     }
 
     void pop_front() {
         if (empty()) return;
-        BiList<T>* temp = head;
-        head = head->next;
-        if (head) head->prev = nullptr;
-        else tail = nullptr;
+        BiList<T>* temp = fake->next;
+        fake->next = temp->next;
+        temp->next->prev = fake;
         delete temp;
     }
 
     void pop_back() {
         if (empty()) return;
-        BiList<T>* temp = tail;
-        tail = tail->prev;
-        if (tail) tail->next = nullptr;
-        else head = nullptr;
+        BiList<T>* temp = fake->prev;
+        fake->prev = temp->prev;
+        temp->prev->next = fake;
         delete temp;
     }
 
     T& front() {
-        return head->val;
+        return fake->next->val;
     }
 
     const T& front() const {
-        return head->val;
+        return fake->next->val;
     }
 
     T& back() {
-        return tail->val;
+        return fake->prev->val;
     }
 
     const T& back() const {
-        return tail->val;
+        return fake->prev->val;
     }
 
     void clear() {
@@ -84,8 +79,8 @@ public:
     }
 
     void print() const {
-        BiList<T>* current = head;
-        while (current) {
+        BiList<T>* current = fake->next;
+        while (current != fake) {
             std::cout << current->val << " ";
             current = current->next;
         }
