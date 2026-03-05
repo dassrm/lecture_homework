@@ -92,3 +92,12 @@ public:
         std::cout << std::endl;
     }
 };
+
+template <typename T>
+List<T> arrayToList(const T* arr, size_t size) {
+    List<T> lst;
+    for (size_t i = 0; i < size; ++i) {
+        lst.push_back(arr[i]);
+    }
+    return lst;
+}
