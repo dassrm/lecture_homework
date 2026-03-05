@@ -15,8 +15,8 @@ private:
 public:
     List() {
         fake = new BiList<T>;
-        fake->next = fake;
-        fake->prev = fake;
+        fake->next = nullptr;
+        fake->prev = nullptr;
     }
     
     ~List() {
@@ -25,18 +25,27 @@ public:
     }
 
     bool empty() const {
-        return fake->next == fake;
+        return fake->next == nullptr;
     }
 
     void push_front(const T& value) {
-        BiList<T>* newNode = new BiList<T>{value, fake->next, fake};
-        fake->next->prev = newNode;
+        BiList<T>* newNode = new BiList<T>{value, fake->next, nullptr};
+        if (fake->next) {
+            fake->next->prev = newNode;
+        }
         fake->next = newNode;
+        if (!fake->prev) {
+            fake->prev = newNode;
+        }
     }
 
     void push_back(const T& value) {
-        BiList<T>* newNode = new BiList<T>{value, fake, fake->prev};
-        fake->prev->next = newNode;
+        BiList<T>* newNode = new BiList<T>{value, nullptr, fake->prev};
+        if (fake->prev) {
+            fake->prev->next = newNode;
+        } else {
+            fake->next = newNode;
+        }
         fake->prev = newNode;
     }
 
@@ -44,7 +53,11 @@ public:
         if (empty()) return;
         BiList<T>* temp = fake->next;
         fake->next = temp->next;
-        temp->next->prev = fake;
+        if (fake->next) {
+            fake->next->prev = nullptr;
+        } else {
+            fake->prev = nullptr;
+        }
         delete temp;
     }
 
@@ -52,7 +65,11 @@ public:
         if (empty()) return;
         BiList<T>* temp = fake->prev;
         fake->prev = temp->prev;
-        temp->prev->next = fake;
+        if (fake->prev) {
+            fake->prev->next = nullptr;
+        } else {
+            fake->next = nullptr;
+        }
         delete temp;
     }
 
@@ -80,7 +97,7 @@ public:
 
     void print() const {
         BiList<T>* current = fake->next;
-        while (current != fake) {
+        while (current) {
             std::cout << current->val << " ";
             current = current->next;
         }
