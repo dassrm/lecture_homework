@@ -101,3 +101,25 @@ List<T> arrayToList(const T* arr, size_t size) {
     }
     return lst;
 }
+
+int main() {
+    int arr[] = {10, 20, 30, 40, 50};
+    size_t size = sizeof(arr) / sizeof(arr[0]);
+
+    List<int> myList = arrayToList(arr, size);
+
+    std::cout << "Список из массива: ";
+    myList.print();
+
+    myList.push_front(5);
+    myList.push_back(60);
+    std::cout << "После push_front(5) и push_back(60): ";
+    myList.print();
+
+    myList.pop_front();
+    myList.pop_back();
+    std::cout << "После pop_front() и pop_back(): ";
+    myList.print();
+
+    return 0;
+}
